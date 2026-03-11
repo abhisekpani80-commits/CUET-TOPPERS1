@@ -111,6 +111,21 @@ async function init() {
             e.returnValue = '';
         }
     });
+
+    // ─── ANTI-CHEATING: TAB-SWITCH DETECTION ─────────────────────────────────
+    let tabSwitchCount = 0;
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden && !state.submitted) {
+            tabSwitchCount++;
+            if (tabSwitchCount === 1) {
+                showToast('🚨 WARNING: Tab switching detected! Switching again will auto-submit your exam.', 'error', 6000);
+                playBeep(1100, 0.8);
+            } else if (tabSwitchCount >= 2) {
+                showToast('❌ EXAM AUTO-SUBMITTED: Multiple tab switches detected. Your exam has been submitted for integrity.', 'error', 5000);
+                setTimeout(finalSubmit, 1000);
+            }
+        }
+    });
 }
 
 // ─── GET NEXT ATTEMPT NUMBER ─────────────────────────────────────────────────

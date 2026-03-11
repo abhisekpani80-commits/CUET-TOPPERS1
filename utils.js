@@ -341,17 +341,51 @@ function showToast(msg, type = 'info', duration = 3000) {
 }
 
 const TEST_LIST = [
-    { id: 'MOCK001', title: 'Mock Test 1 — General Test', subject: 'General Test', section: 'Section III', totalQuestions: 50, attemptLimit: 40, durationMinutes: 60, isFree: true, price: 0, isPublished: true },
-    { id: 'MOCK002', title: 'Mock Test 2 — General Test', subject: 'General Test', section: 'Section III', totalQuestions: 50, attemptLimit: 40, durationMinutes: 60, isFree: false, price: 199, isPublished: true },
-    { id: 'MOCK003', title: 'Mock Test 3 — Physics', subject: 'Physics', section: 'Section II', totalQuestions: 50, attemptLimit: 40, durationMinutes: 45, isFree: false, price: 199, isPublished: true },
+    // ─── 5 FREE TESTS ───
+    { id: 'MOCK001', title: 'Mock Test 1 — General Aptitude', subject: 'General Aptitude', section: 'Section III', totalQuestions: 50, attemptLimit: 40, durationMinutes: 60, isFree: true, price: 0, isPublished: true },
+    { id: 'MOCK_PHY', title: 'Mock Test — Physics', subject: 'Physics', section: 'Section II', totalQuestions: 25, attemptLimit: 20, durationMinutes: 45, isFree: true, price: 0, isPublished: true },
+    { id: 'MOCK_CHE', title: 'Mock Test — Chemistry', subject: 'Chemistry', section: 'Section II', totalQuestions: 25, attemptLimit: 20, durationMinutes: 45, isFree: true, price: 0, isPublished: true },
+    { id: 'MOCK_BIO', title: 'Mock Test — Biology', subject: 'Biology', section: 'Section II', totalQuestions: 25, attemptLimit: 20, durationMinutes: 45, isFree: true, price: 0, isPublished: true },
+    { id: 'MOCK_ENG', title: 'Mock Test — English', subject: 'English', section: 'Section IA', totalQuestions: 25, attemptLimit: 20, durationMinutes: 45, isFree: true, price: 0, isPublished: true },
+    // ─── LOCKED PREMIUM TESTS ───
+    { id: 'MOCK002', title: 'Mock Test 2 — General Aptitude (Advanced)', subject: 'General Aptitude', section: 'Section III', totalQuestions: 50, attemptLimit: 40, durationMinutes: 60, isFree: false, price: 199, isPublished: true },
+    { id: 'MOCK003', title: 'Mock Test 3 — Physics (Advanced)', subject: 'Physics', section: 'Section II', totalQuestions: 50, attemptLimit: 40, durationMinutes: 45, isFree: false, price: 199, isPublished: true },
     { id: 'MOCK004', title: 'Mock Test 4 — History', subject: 'History', section: 'Section II', totalQuestions: 50, attemptLimit: 40, durationMinutes: 45, isFree: false, price: 199, isPublished: true },
+    { id: 'MOCK005', title: 'Mock Test 5 — Mathematics', subject: 'Mathematics', section: 'Section II', totalQuestions: 50, attemptLimit: 40, durationMinutes: 60, isFree: false, price: 199, isPublished: false },
+    { id: 'MOCK006', title: 'Mock Test 6 — Economics', subject: 'Economics', section: 'Section II', totalQuestions: 50, attemptLimit: 40, durationMinutes: 45, isFree: false, price: 199, isPublished: false },
+    { id: 'MOCK007', title: 'Mock Test 7 — Political Science', subject: 'Political Science', section: 'Section II', totalQuestions: 50, attemptLimit: 40, durationMinutes: 45, isFree: false, price: 199, isPublished: false },
 ];
 
-// ─── GEMINI AI INTEGRATION ──────────────────────────────────────────────────
-const GEMINI_API_KEY = 'AIzaSyBQpmqC9EYgk7lMHt8wpSL8GEX6dz6syZo';
+// ─── DYNAMIC API KEY (Firestore) ────────────────────────────────────────────
+// Admin can set any API key from the Admin Panel → stored in Firestore 'config/api_keys'
+let _cachedApiKey = null;
+
+async function getApiKey(keyName = 'gemini') {
+    if (_cachedApiKey) return _cachedApiKey;
+    if (!window.firebaseDB) return null;
+    try {
+        const doc = await window.firebaseDB.collection('config').doc('api_keys').get();
+        if (doc.exists && doc.data()[keyName]) {
+            _cachedApiKey = doc.data()[keyName];
+            return _cachedApiKey;
+        }
+    } catch (e) {
+        console.warn('⚠️ Could not fetch API key from Firestore:', e.message);
+    }
+    return null;
+}
 
 async function fetchAIAnalysis(resultData) {
     const { userName, testTitle, correct, incorrect, unattempted, netScore, questions, answers } = resultData;
+
+    // Fetch API key dynamically
+    const apiKey = await getApiKey('gemini');
+    if (!apiKey) {
+        return `<div class="alert-banner alert-error">
+            ⚠️ <b>AI Analysis Not Configured</b><br>
+            The admin has not configured an AI API key yet. Please contact support.
+        </div>`;
+    }
 
     // Create a concise summary for the AI
     const topicStats = {};
@@ -376,7 +410,7 @@ Provide:
 Format the output in clean HTML (using <div>, <strong>, and <ul> tags only). Keep it professional, motivating, and strictly exam-focused.`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -401,5 +435,33 @@ Format the output in clean HTML (using <div>, <strong>, and <ul> tags only). Kee
             ⚠️ <b>AI Analysis Unavailable</b><br>
             ${error.message}. Please check your internet connection or try again later.
         </div>`;
+    }
+}
+
+// ─── PHASE 8: FIREBASE EXAM ENGINE ──────────────────────────────────────────
+async function fetchLiveQuestions(testId) {
+    if (!window.firebaseDB) return [];
+    try {
+        console.log(`📡 Fetching live questions for ${testId} from Firebase...`);
+        const snap = await window.firebaseDB.collection('test_content')
+            .where('testId', '==', testId)
+            .get();
+
+        if (snap.empty) {
+            console.log(`⚠️ No live questions found for ${testId}. Falling back to local/default bank.`);
+            return [];
+        }
+
+        const cloudQs = snap.docs.map(doc => {
+            const data = doc.data();
+            data.id = doc.id; // Ensure ID is mapped
+            return data;
+        });
+
+        console.log(`✅ Loaded ${cloudQs.length} questions from Firebase.`);
+        return cloudQs;
+    } catch (e) {
+        console.error("❌ Firebase fetch error:", e);
+        return [];
     }
 }

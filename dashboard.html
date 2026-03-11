@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
-    <title>Test Dashboard — CUET TEST</title>
-    <link rel="stylesheet" href="css/base.css">
+    <title>Test Dashboard — CUET Pro</title>
+    <link rel="stylesheet" href="base.css">
     <style>
         body {
             background: #f0f2f5;
@@ -586,7 +586,7 @@
         <div class="header-left">
             <div class="nta-logo-sm">NTA</div>
             <div class="header-title">
-                <h1>CUET TEST | Mock Test Series</h1>
+                <h1>CUET Pro | Mock Test Series</h1>
                 <p>Computer Based Test Practice Portal</p>
             </div>
         </div>
@@ -612,7 +612,7 @@
     <main class="dash-main">
         <div style="display: grid; grid-template-columns: 1fr 300px; gap: 25px;">
             <div class="dash-left">
-                <h2>📚 CUET TEST Series</h2>
+                <h2>📚 CUET Pro Series</h2>
                 <p class="dash-sub" id="dashWelcome">Welcome back! Choose a test to begin your preparation.</p>
 
                 <!-- Pricing Section -->
@@ -744,47 +744,7 @@
         </div>
     </main>
 
-    <!-- Test List Section -->
-    <div class="test-grid" id="testGrid">
-        <!-- Populated by JS -->
-    </div>
 
-    <!-- WA Strip -->
-    <div class="wa-strip">
-        <span>📲</span>
-        <div style="flex:1;">
-            To unlock any test, WhatsApp us at <strong>+91 9556436685</strong> and send the test name. You'll
-            receive a secure unlock code within minutes.
-        </div>
-        <a class="wa-btn" href="https://wa.me/919556436685?text=Hi%2C+I+want+to+unlock+a+CUET+mock+test" target="_blank"
-            rel="noopener">
-            <span>💬</span> Chat on WhatsApp
-        </a>
-    </div>
-
-    <!-- Attempt History -->
-    <div class="history-section">
-        <h3>📊 My Attempt History</h3>
-        <div id="historyContainer">
-            <table class="history-table" id="historyTable" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>Test</th>
-                        <th>Attempt</th>
-                        <th>Date</th>
-                        <th>Score</th>
-                        <th>Net Score</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="historyBody"></tbody>
-            </table>
-            <div class="no-history" id="noHistory">
-                📋 No attempts yet. Start <strong>Mock Test 1 (Free)</strong> to begin!
-            </div>
-        </div>
-    </div>
-    </main>
 
     <!-- Locked Test Modal -->
     <div class="modal-overlay" id="lockModal">
@@ -898,10 +858,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="js/firebase-config.js"></script>
+    <script src="firebase-config.js"></script>
 
-    <script src="js/utils.js"></script>
-    <script src="js/questions.js"></script>
+    <script src="utils.js"></script>
+    <script src="questions.js"></script>
     <script>
         const user = requireAuth();
         let selectedTestId = null;

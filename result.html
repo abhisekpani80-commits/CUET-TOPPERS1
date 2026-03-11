@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
-    <title>Test Result & Analysis — CUET TEST</title>
-    <link rel="stylesheet" href="css/base.css">
+    <title>Test Result & Analysis — CUET Pro</title>
+    <link rel="stylesheet" href="base.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -598,7 +598,7 @@
         <!-- ─── SCORE CARD ─── -->
         <div class="score-card" id="scoreCard">
             <div class="score-card-header">
-                <h2 id="testTitle">CUET TEST — Result</h2>
+                <h2 id="testTitle">CUET Pro — Result</h2>
                 <div class="score-meta">
                     <span id="metaName">—</span>
                     <span id="metaRoll">—</span>
@@ -764,10 +764,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="js/firebase-config.js"></script>
+    <script src="firebase-config.js"></script>
 
-    <script src="js/utils.js"></script>
-    <script src="js/questions.js"></script>
+    <script src="utils.js"></script>
+    <script src="questions.js"></script>
     <script>
         const user = requireAuth();
         const result = Store.get('lastResult', null);
@@ -1059,7 +1059,7 @@
                 doc.rect(0, 0, 210, 30, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-                doc.text('CUET (UG) 2025 — Mock Test Score Card', 14, 14);
+                doc.text('CUETPro 2025 — Mock Test Score Card', 14, 14);
                 doc.setFontSize(9); doc.setFont('helvetica', 'normal');
                 doc.text('UNOFFICIAL PRACTICE REPORT — NOT AN NTA DOCUMENT', 14, 22);
 
@@ -1102,10 +1102,10 @@
                 doc.setFillColor(26, 26, 46);
                 doc.rect(0, 277, 210, 20, 'F');
                 doc.setTextColor(150, 150, 150); doc.setFontSize(8);
-                doc.text('UNOFFICIAL MOCK TEST PLATFORM — Not affiliated with NTA. For official CUET: cuet.nta.nic.in | Support: +91 9556436685', 14, 285);
+                doc.text('CUETPro REPORT — Not affiliated with NTA. For official CUET: cuet.nta.nic.in | Support: +91 9556436685', 14, 285);
                 doc.text(`Generated: ${new Date().toLocaleString('en-IN')}`, 14, 290);
 
-                doc.save(`CUET_TEST_${result.userId}_Attempt${result.attemptNumber}.pdf`);
+                doc.save(`CUETPro_ScoreCard_${result.userId}_Attempt${result.attemptNumber}.pdf`);
                 showToast('✅ PDF downloaded successfully!', 'success');
 
                 // --- NEW: SECOND PDF FOR DETAILED Q&A ---
@@ -1116,7 +1116,7 @@
                         qaDoc.rect(0, 0, 210, 25, 'F');
                         qaDoc.setTextColor(255, 255, 255);
                         qaDoc.setFontSize(14); qaDoc.setFont('helvetica', 'bold');
-                        qaDoc.text(`Detailed Answer Key — ${result.testTitle}`, 14, 12);
+                        qaDoc.text(`CUETPro Detailed Answer Key — ${result.testTitle}`, 14, 12);
                         qaDoc.setFontSize(9); qaDoc.setFont('helvetica', 'normal');
                         qaDoc.text(`Candidate: ${result.userName} | Roll: ${result.userId}`, 14, 18);
 
@@ -1144,7 +1144,7 @@
                             y += 10;
                         });
 
-                        qaDoc.save(`CUET_Detailed_QA_${result.userId}.pdf`);
+                        qaDoc.save(`CUETPro_ResponseSheet_${result.userId}.pdf`);
                     }
                 }, 500);
 
@@ -1180,7 +1180,7 @@
             document.body.innerHTML = `
                 <div style="text-align:center;padding:100px;">
                     <h2>No Result Found</h2>
-                    <p>CUET TEST</p>
+                    <p>CUET Pro</p>
                 </div>
             `;
             setTimeout(() => window.location.href = 'dashboard.html', 2000);
